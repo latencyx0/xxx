@@ -1,20 +1,6 @@
 function ola
 {
-<#
- 
-.SYNOPSIS
-Este script serve para fazer um bypass de UAC (Controle de Contas de Usuário) em um Windows onde o usuário atual está no grupo de administradores e a configuração de UAC está no padrão. Ele eleva os privilégios de maneira transparente.
 
-.DESCRIPTION
-Este script usa código em C# para ser carregado na memória com PowerShell usando reflection, e então invoca a função `executeBypass` do código C# carregado, que executará o comando com altos privilégios (administrador).
-
-.PARAMETER Executable
-.PARAMETER Command
-
-.EXAMPLE
-
-
-#>
 
 param(
     [Parameter(Mandatory = $true)]
