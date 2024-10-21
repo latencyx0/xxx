@@ -1,4 +1,4 @@
-function invoke-UACBypass
+function ola
 {
 <#
  
