@@ -1,7 +1,7 @@
 function latencyx-Invoke-UAC
 {
 <#
- 
+ Biggy_Asian
 .SYNOPSIS
 Este script serve para fazer um bypass de UAC (Controle de Contas de UsuÃ¡rio) em um Windows onde o usuÃ¡rio atual estÃ¡ no grupo de administradores e a configuraÃ§Ã£o de UAC estÃ¡ no padrÃ£o. Ele eleva os privilÃ©gios de maneira transparente.
 
