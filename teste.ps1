@@ -1,2 +1,2 @@
 Add-Type -AssemblyName Microsoft.VisualBasic
-[Microsoft.VisualBasic.Interaction]::MsgBox("Esta é uma mensagem!")
+[Microsoft.VisualBasic.Interaction]::MsgBox("test empty")
